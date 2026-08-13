@@ -1,0 +1,10 @@
+Flask==3.0.3
+Werkzeug==3.0.3
+gunicorn==22.0.0
+pillow==10.4.0
+# Add your model's dependencies below when you plug it in, e.g.:
+# torch
+# torchvision
+# pillow
+# numpy
+# opencv-python

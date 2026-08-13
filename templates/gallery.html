@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AUTOFOX · Reflection Removal Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">AUTO<span class="brand-accent">FOX</span></span>
+      <span class="brand-sub">Gallery</span>
+    </div>
+    <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+  </header>
+
+  <main class="gallery-main">
+    <section class="hero">
+      <h1>Original vs. Minibyte vs. After</h1>
+      <p class="hero-sub">
+        Each image below has two comparison sliders: Original against the
+        Minibyte-compressed version, and Original against the final Reflection
+        Removal output.
+      </p>
+    </section>
+
+    {% if items %}
+    <div class="gallery-grid">
+      {% for item in items %}
+      <div class="result-card gallery-card">
+        <div class="card-name">{{ item.name }}</div>
+
+        {% if item.minibyte_url %}
+        <div class="slider-block">
+          <div class="slider-label">Original vs Minibyte</div>
+          <div class="compare-wrap">
+            <img class="compare-img img-after" src="{{ item.minibyte_url }}" alt="Minibyte" />
+            <div class="compare-before">
+              <img class="compare-img img-before" src="{{ item.orignal_url }}" alt="Original" />
+            </div>
+            <div class="compare-handle">
+              <div class="handle-line"></div>
+              <div class="handle-circle">⟺</div>
+            </div>
+            <span class="tag tag-before">Original</span>
+            <span class="tag tag-after">Minibyte</span>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if item.after_url %}
+        <div class="slider-block">
+          <div class="slider-label">Original vs After</div>
+          <div class="compare-wrap">
+            <img class="compare-img img-after" src="{{ item.after_url }}" alt="After" />
+            <div class="compare-before">
+              <img class="compare-img img-before" src="{{ item.orignal_url }}" alt="Original" />
+            </div>
+            <div class="compare-handle">
+              <div class="handle-line"></div>
+              <div class="handle-circle">⟺</div>
+            </div>
+            <span class="tag tag-before">Original</span>
+            <span class="tag tag-after">After</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="error-box">No image sets found. Add files named
+      <code>&lt;name&gt;_orignal</code>, <code>&lt;name&gt;_minibyte</code> and
+      <code>&lt;name&gt;_after</code> to the gallery folder.</div>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <span>Demo build · Reflection-removal engine plugs in server-side.</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
+</body>
+</html>
