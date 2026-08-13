@@ -9,50 +9,16 @@ and original-vs-after.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from flask import Flask, render_template, send_from_directory, url_for
 
-BASE_DIR = Path(__file__).resolve().parent
-GALLERY_DIR = (
-    BASE_DIR
-    / "images_suite"
-    / "minibyte_outputs-20260812T115009Z-1-001"
-    / "minibyte_outputs"
-)
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "bmp"}
-# Groups images by <basename><suffix>.<ext>. Both spellings of "original" are
-# accepted since the source folder uses "_original".
-GALLERY_SUFFIXES = {
-    "orignal": ("_orignal", "_original"),
-    "minibyte": ("_minibyte",),
-    "after": ("_after",),
-}
+from gallery_data import GALLERY_DIR, group_gallery_files
 
 app = Flask(__name__)
 
 
 def list_gallery_items():
-    """Group images in GALLERY_DIR by basename into orignal/minibyte/after sets."""
-    groups: dict[str, dict[str, str]] = {}
-    if not GALLERY_DIR.is_dir():
-        return []
-
-    for f in sorted(GALLERY_DIR.iterdir()):
-        if not f.is_file() or f.suffix.lower().lstrip(".") not in ALLOWED_EXTENSIONS:
-            continue
-        stem = f.stem
-        for kind, suffixes in GALLERY_SUFFIXES.items():
-            matched = next((s for s in suffixes if stem.endswith(s)), None)
-            if matched:
-                base = stem[: -len(matched)]
-                groups.setdefault(base, {})[kind] = f.name
-                break
-
     items = []
-    for base, files in sorted(groups.items()):
-        if "orignal" not in files:
-            continue
+    for base, files in sorted(group_gallery_files().items()):
         items.append(
             {
                 "name": base,
@@ -70,7 +36,12 @@ def list_gallery_items():
 
 @app.route("/")
 def gallery():
-    return render_template("gallery.html", items=list_gallery_items())
+    return render_template(
+        "gallery.html",
+        items=list_gallery_items(),
+        css_url=url_for("static", filename="css/style.css"),
+        js_url=url_for("static", filename="js/gallery.js"),
+    )
 
 
 @app.route("/gallery-images/<path:filename>")
