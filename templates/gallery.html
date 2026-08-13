@@ -29,7 +29,7 @@
     </section>
 
     {% if items %}
-    <div class="gallery-grid">
+    <div class="gallery-grid" data-page-size="1">
       {% for item in items %}
       <div class="result-card gallery-card">
         <div class="card-name">{{ item.name }}</div>
@@ -38,9 +38,9 @@
         <div class="slider-block">
           <div class="slider-label">Original vs Minibyte</div>
           <div class="compare-wrap">
-            <img class="compare-img img-after" src="{{ item.minibyte_url }}" alt="Minibyte" />
+            <img class="compare-img img-after" data-src="{{ item.minibyte_url }}" alt="Minibyte" />
             <div class="compare-before">
-              <img class="compare-img img-before" src="{{ item.orignal_url }}" alt="Original" />
+              <img class="compare-img img-before" data-src="{{ item.orignal_url }}" alt="Original" />
             </div>
             <div class="compare-handle">
               <div class="handle-line"></div>
@@ -56,9 +56,9 @@
         <div class="slider-block">
           <div class="slider-label">Original vs After</div>
           <div class="compare-wrap">
-            <img class="compare-img img-after" src="{{ item.after_url }}" alt="After" />
+            <img class="compare-img img-after" data-src="{{ item.after_url }}" alt="After" />
             <div class="compare-before">
-              <img class="compare-img img-before" src="{{ item.orignal_url }}" alt="Original" />
+              <img class="compare-img img-before" data-src="{{ item.orignal_url }}" alt="Original" />
             </div>
             <div class="compare-handle">
               <div class="handle-line"></div>
@@ -71,6 +71,11 @@
         {% endif %}
       </div>
       {% endfor %}
+    </div>
+    <div class="pagination" id="pagination">
+      <button type="button" id="prev-page" class="btn btn-ghost">← Prev car</button>
+      <span id="page-indicator" class="page-indicator"></span>
+      <button type="button" id="next-page" class="btn btn-ghost">Next car →</button>
     </div>
     {% else %}
     <div class="error-box">No image sets found. Add files named
