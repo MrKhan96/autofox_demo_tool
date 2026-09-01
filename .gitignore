@@ -6,3 +6,6 @@ uploads/*
 results/*
 !uploads/.gitkeep
 !results/.gitkeep
+
+# Downloaded image bundles
+*.zip

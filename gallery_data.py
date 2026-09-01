@@ -11,10 +11,11 @@ BASE_DIR = Path(__file__).resolve().parent
 GALLERY_DIR = BASE_DIR / "docs" / "gallery-images"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "bmp"}
 # Groups images by <basename><suffix>.<ext>. Both spellings of "original" are
-# accepted since the source folder uses "_original".
+# accepted since the source folder uses "_original". Suffixes are matched
+# longest-first so "_minibyte_final" wins over "_minibyte".
 GALLERY_SUFFIXES = {
     "orignal": ("_orignal", "_original"),
-    "minibyte": ("_minibyte",),
+    "minibyte": ("_minibyte_final", "_minibyte"),
     "after": ("_after",),
 }
 
