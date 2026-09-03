@@ -49,6 +49,16 @@ python scripts/build_reflection_endpoints.py \
 Optional flags: `--orig <dir>` (defaults to `docs/gallery-images`),
 `--out <dir>`, `--max-width 1400`, `--quality 90`.
 
+## Two pages, one deploy
+
+This app serves both the original gallery and the interactive tool, and the
+static export publishes both from the same GitHub Pages source (`docs/`):
+
+| Page | Flask route | Static file | Pages URL |
+|------|-------------|-------------|-----------|
+| Gallery (Original vs Minibyte vs After) | `/` | `docs/index.html` | `…github.io/<repo>/` |
+| Reflection-Level interactive tool | `/tool` | `docs/tool/index.html` | `…github.io/<repo>/tool/` |
+
 ## Run locally (Flask)
 
 ```bash
@@ -56,16 +66,17 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open **http://localhost:5000**.
+Open **http://localhost:5000/** (gallery) and **http://localhost:5000/tool** (tool).
 
 ## Static export (GitHub Pages)
 
 ```bash
-python scripts/build_static.py     # renders docs/index.html from the endpoints
+python scripts/build_static.py     # writes docs/index.html and docs/tool/index.html
 ```
 
-`docs/` is self-contained (`index.html`, `static/`, `reflection-images/`) and
-can be served by GitHub Pages.
+`docs/` is self-contained (`index.html`, `tool/index.html`, `static/`,
+`gallery-images/`, `reflection-images/`). The tool page lives one level deeper,
+so it references shared assets with a `../` prefix.
 
 ## Run with Docker
 

@@ -15,7 +15,10 @@
       <span class="brand-mark">AUTO<span class="brand-accent">FOX</span></span>
       <span class="brand-sub">Reflection Level</span>
     </div>
-    <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+    <nav class="header-links">
+      {% if gallery_url %}<a class="header-link" href="{{ gallery_url }}">← Gallery</a>{% endif %}
+      <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+    </nav>
   </header>
 
   <main class="gallery-main">

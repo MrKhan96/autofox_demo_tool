@@ -15,7 +15,10 @@
       <span class="brand-mark">AUTO<span class="brand-accent">FOX</span></span>
       <span class="brand-sub">Gallery</span>
     </div>
-    <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+    <nav class="header-links">
+      {% if tool_url %}<a class="header-link" href="{{ tool_url }}">Interactive tool →</a>{% endif %}
+      <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+    </nav>
   </header>
 
   <main class="gallery-main">
