@@ -57,7 +57,7 @@ static export publishes both from the same GitHub Pages source (`docs/`):
 | Page | Flask route | Static file | Pages URL |
 |------|-------------|-------------|-----------|
 | Gallery (Original vs Minibyte vs After) | `/` | `docs/index.html` | `…github.io/<repo>/` |
-| Reflection-Level interactive tool | `/tool` | `docs/tool/index.html` | `…github.io/<repo>/tool/` |
+| Reflection-Level interactive tool | `/interactive_tool` | `docs/interactive_tool/index.html` | `…github.io/<repo>/interactive_tool/` |
 
 ## Run locally (Flask)
 
@@ -66,17 +66,17 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open **http://localhost:5000/** (gallery) and **http://localhost:5000/tool** (tool).
+Open **http://localhost:5000/** (gallery) and **http://localhost:5000/interactive_tool** (tool).
 
 ## Static export (GitHub Pages)
 
 ```bash
-python scripts/build_static.py     # writes docs/index.html and docs/tool/index.html
+python scripts/build_static.py     # writes docs/index.html and docs/interactive_tool/index.html
 ```
 
-`docs/` is self-contained (`index.html`, `tool/index.html`, `static/`,
-`gallery-images/`, `reflection-images/`). The tool page lives one level deeper,
-so it references shared assets with a `../` prefix.
+`docs/` is self-contained (`index.html`, `interactive_tool/index.html`,
+`static/`, `gallery-images/`, `reflection-images/`). The tool page lives one
+level deeper, so it references shared assets with a `../` prefix.
 
 ## Run with Docker
 

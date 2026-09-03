@@ -1,13 +1,13 @@
 """
 AUTOFOX — Flask app serving two pages:
 
-  /       the read-only gallery (Original vs Minibyte vs After)
-  /tool   the Reflection-Level interactive tool (original + slider-driven
-          body reflection removal, with a downloadable output)
+  /                  the read-only gallery (Original vs Minibyte vs After)
+  /interactive_tool  the Reflection-Level interactive tool (original + slider-
+                     driven body reflection removal, with a downloadable output)
 
 The static export (scripts/build_static.py) mirrors this as:
-  docs/index.html         -> gallery       (Pages root URL)
-  docs/tool/index.html    -> interactive   (Pages /tool/ URL)
+  docs/index.html                   -> gallery      (Pages root URL)
+  docs/interactive_tool/index.html  -> interactive  (Pages /interactive_tool/ URL)
 
 so both are published from the same GitHub Pages source (docs/).
 """
@@ -61,12 +61,12 @@ def gallery():
         items=list_gallery_items(),
         css_url=url_for("static", filename="css/style.css"),
         js_url=url_for("static", filename="js/gallery.js"),
-        tool_url=url_for("tool"),
+        tool_url=url_for("interactive_tool"),
     )
 
 
-@app.route("/tool")
-def tool():
+@app.route("/interactive_tool")
+def interactive_tool():
     return render_template(
         "reflection.html",
         items=list_reflection_items(),

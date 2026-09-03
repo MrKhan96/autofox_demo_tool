@@ -1,12 +1,12 @@
 """
 Build a static export for GitHub Pages with BOTH pages published from docs/:
 
-  docs/index.html        the gallery            -> https://<user>.github.io/<repo>/
-  docs/tool/index.html   the interactive tool   -> https://<user>.github.io/<repo>/tool/
+  docs/index.html                    the gallery          -> https://<user>.github.io/<repo>/
+  docs/interactive_tool/index.html   the interactive tool -> https://<user>.github.io/<repo>/interactive_tool/
 
 Shared assets live in docs/static/ and the two image sets in
 docs/gallery-images/ and docs/reflection-images/. The tool page sits one level
-deeper (docs/tool/), so it references assets with a "../" prefix.
+deeper (docs/interactive_tool/), so it references assets with a "../" prefix.
 
 Run:  python scripts/build_static.py
 """
@@ -62,7 +62,7 @@ def build_tool_items(prefix="../"):
 def main():
     (DOCS_DIR / "static" / "css").mkdir(parents=True, exist_ok=True)
     (DOCS_DIR / "static" / "js").mkdir(parents=True, exist_ok=True)
-    (DOCS_DIR / "tool").mkdir(parents=True, exist_ok=True)
+    (DOCS_DIR / "interactive_tool").mkdir(parents=True, exist_ok=True)
 
     for rel in ("css/style.css", "js/gallery.js", "js/reflection.js"):
         shutil.copyfile(BASE_DIR / "static" / rel, DOCS_DIR / "static" / rel)
@@ -75,11 +75,11 @@ def main():
         items=gallery_items,
         css_url="static/css/style.css",
         js_url="static/js/gallery.js",
-        tool_url="tool/",
+        tool_url="interactive_tool/",
     )
     (DOCS_DIR / "index.html").write_text(gallery_html, encoding="utf-8")
 
-    # Interactive tool at /tool/ (one level deeper -> ../ asset prefix).
+    # Interactive tool at /interactive_tool/ (one level deeper -> ../ asset prefix).
     tool_items = build_tool_items(prefix="../")
     tool_html = env.get_template("reflection.html").render(
         items=tool_items,
@@ -87,10 +87,10 @@ def main():
         js_url="../static/js/reflection.js",
         gallery_url="../",
     )
-    (DOCS_DIR / "tool" / "index.html").write_text(tool_html, encoding="utf-8")
+    (DOCS_DIR / "interactive_tool" / "index.html").write_text(tool_html, encoding="utf-8")
 
-    print(f"wrote {DOCS_DIR / 'index.html'}       ({len(gallery_items)} cars, gallery)")
-    print(f"wrote {DOCS_DIR / 'tool' / 'index.html'}  ({len(tool_items)} cars, interactive tool)")
+    print(f"wrote {DOCS_DIR / 'index.html'}                   ({len(gallery_items)} cars, gallery)")
+    print(f"wrote {DOCS_DIR / 'interactive_tool' / 'index.html'}  ({len(tool_items)} cars, interactive tool)")
 
 
 if __name__ == "__main__":
