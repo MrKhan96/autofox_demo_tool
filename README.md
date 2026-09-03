@@ -1,83 +1,87 @@
-# AUTOFOX — Reflection Removal Demo
+# AUTOFOX — Reflection-Level Interactive Tool
 
-A demo web app: upload one or many car photos, run them through the
-reflection-removal model, and view **before/after** comparisons with draggable
-sliders, then download the cleaned images.
+> Branch: `Reflection_Level_Interactive_Tool`. A variant of the `master`
+> gallery. For each car it shows the **original (reflective)** photo on the
+> left and a **processed** photo on the right whose **body reflection-removal
+> level** is driven by a single slider (0% keeps the reflection, 100% shows the
+> fully cleaned body). Glass is always cleaned.
 
-Features:
-- **Batch upload** — drag in multiple images; each gets its own before/after card
-- **"Try a sample"** — one-click demo using a bundled sample car image
-- **Download** cleaned results individually
+## How the slider works
 
-## Run with Docker (recommended for handoff)
+Every setting from the source Colab notebook is fixed except the **body** alpha:
+
+```python
+FIXED_SETTINGS = {
+    'tolerance': 60, 'alpha_background': 0.0, 'erosion_strength': 6,
+    'alpha_wheel': 0.0, 'alpha_glass': 1.0, 'alpha_light': 0.0,
+    'alpha_grille': 0.0, 'alpha_plate': 0.0, 'alpha_logo': 0.0,
+}
+```
+
+Because only the body alpha `t` varies, the per-class blend
+`processed*alpha + original*(1-alpha)` is **linear in `t`**, so the whole
+slider range is an exact cross-fade between two precomputed endpoints:
+
+- `<id>_base.jpg` — `t = 0`: original everywhere, glass cleaned
+- `<id>_bodyclean.jpg` — `t = 1`: body **and** glass cleaned
+
+`blend(t) = base*(1-t) + bodyclean*t` reproduces the Colab math exactly. The
+browser just cross-fades the two images, so there is no OpenCV/NumPy at
+runtime and the tool deploys as a static site.
+
+## Rebuilding the endpoint images
+
+The endpoints are generated offline from three local folders (matched by car id):
+
+| Role | Filename pattern | Source |
+|------|------------------|--------|
+| Original (reflective) | `<id>_original.*` | `docs/gallery-images/` (default) |
+| Processed (reflection-removed) | `<id>_minibyte.*` | local `reflection_removed_masks_selected/` |
+| Segmentation mask | `<id>_original.*` (colour-coded) | local `client_original_masks_selected/` |
+
+```bash
+python scripts/build_reflection_endpoints.py \
+    --proc "C:/path/to/reflection_removed_masks_selected" \
+    --mask "C:/path/to/client_original_masks_selected"
+# writes docs/reflection-images/<id>_{original,base,bodyclean}.jpg
+```
+
+Optional flags: `--orig <dir>` (defaults to `docs/gallery-images`),
+`--out <dir>`, `--max-width 1400`, `--quality 90`.
+
+## Run locally (Flask)
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+Open **http://localhost:5000**.
+
+## Static export (GitHub Pages)
+
+```bash
+python scripts/build_static.py     # renders docs/index.html from the endpoints
+```
+
+`docs/` is self-contained (`index.html`, `static/`, `reflection-images/`) and
+can be served by GitHub Pages.
+
+## Run with Docker
 
 ```bash
 docker compose up --build
 ```
 
-Open **http://localhost:5000**.
-
-The `model/` folder is mounted as a volume, so you can edit
-`model/reflection_model.py` (plug in the real model) and just restart the
-container — no rebuild needed. `results/` and `uploads/` are persisted to the
-host.
-
-To build/run without compose:
-
-```bash
-docker build -t autofox-reflection-demo .
-docker run -p 5000:5000 autofox-reflection-demo
-```
-
-## Run locally (no Docker)
-
-```bash
-# from the project folder
-python -m venv .venv
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# (macOS/Linux: source .venv/bin/activate)
-
-pip install -r requirements.txt
-python app.py
-```
-
-Then open **http://localhost:5000**.
-
-## Plugging in the real model
-
-The web app calls exactly one function. Edit the body of:
-
-```
-model/reflection_model.py  ->  remove_reflection(input_path, output_path)
-```
-
-Keep the signature `(input_path, output_path) -> output_path`. Everything else
-(upload, processing, before/after view, download) keeps working unchanged.
-
-Example:
-
-```python
-from PIL import Image
-img = Image.open(input_path).convert("RGB")
-result = your_model.predict(img)   # PIL.Image or ndarray
-result.save(output_path)
-return str(output_path)
-```
-
-Add your model's Python dependencies to `requirements.txt`.
-
 ## Structure
 
 ```
-app.py                      Flask server + /process endpoint
-model/reflection_model.py   <-- plug the model in here (currently a passthrough)
-templates/index.html        UI
-static/css/style.css        Branding + before/after slider styles
-static/js/main.js           Upload, fetch, slider logic
-uploads/ , results/         Runtime image storage (gitignored)
+app.py                              Flask server (serves the tool at /)
+reflection_data.py                  Groups docs/reflection-images/ by car id
+templates/reflection.html           UI: original | processed + slider
+static/js/reflection.js             Slider cross-fade + per-car pagination
+static/css/style.css                Branding + slider/pane styles
+scripts/build_reflection_endpoints.py  Offline endpoint generator (cv2/numpy)
+scripts/build_static.py             Renders docs/ for GitHub Pages
+docs/reflection-images/             <id>_{original,base,bodyclean}.jpg (72 cars)
 ```
-
-> The current model is a **placeholder** that passes the image through
-> unchanged, so the before/after slider will show identical images until the
-> real model is connected.

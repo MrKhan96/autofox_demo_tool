@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AUTOFOX · Reflection-Level Interactive Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ css_url }}" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">AUTO<span class="brand-accent">FOX</span></span>
+      <span class="brand-sub">Reflection Level</span>
+    </div>
+    <a class="header-link" href="https://www.autofox.ai/" target="_blank" rel="noopener">autofox.ai ↗</a>
+  </header>
+
+  <main class="gallery-main">
+    <section class="hero">
+      <h1>Interactive Reflection Removal</h1>
+      <p class="hero-sub">
+        Left is the original photo with reflections. Drag the slider to dial in
+        how much body reflection is removed on the right &mdash; 0% keeps the
+        reflection, 100% shows the fully cleaned body. Glass is always cleaned.
+      </p>
+    </section>
+
+    {% if items %}
+    <div class="gallery-grid" data-page-size="1">
+      {% for item in items %}
+      <div class="result-card reflect-card">
+        <div class="card-name">{{ item.name }}</div>
+
+        <div class="reflect-panes">
+          <figure class="reflect-pane">
+            <div class="pane-media">
+              <img class="pane-img" data-src="{{ item.original_url }}" alt="Original" />
+            </div>
+            <figcaption class="pane-cap">Original <span class="pane-cap-dim">· with reflection</span></figcaption>
+          </figure>
+
+          <figure class="reflect-pane">
+            <div class="pane-media blend-stack">
+              <img class="pane-img blend-base" data-src="{{ item.base_url }}" alt="Processed (reflection kept)" />
+              <img class="pane-img blend-top" data-src="{{ item.bodyclean_url }}" alt="Processed (reflection removed)" />
+            </div>
+            <figcaption class="pane-cap">Processed <span class="pane-cap-dim">· body level <span class="level-readout">0%</span></span></figcaption>
+          </figure>
+        </div>
+
+        <div class="reflect-control">
+          <span class="control-label">Body reflection removal <output class="control-value">0%</output></span>
+          <input type="range" class="body-slider" min="0" max="100" step="1" value="0"
+                 aria-label="Body reflection removal level" />
+        </div>
+
+        <div class="reflect-actions">
+          <button type="button" class="btn btn-primary download-btn">↓ Download Output image</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="pagination" id="pagination">
+      <button type="button" id="prev-page" class="btn btn-ghost">← Prev car</button>
+      <span id="page-indicator" class="page-indicator"></span>
+      <button type="button" id="next-page" class="btn btn-ghost">Next car →</button>
+    </div>
+    {% else %}
+    <div class="error-box">No image sets found. Run
+      <code>python scripts/build_reflection_endpoints.py</code> to generate
+      <code>docs/reflection-images/</code>.</div>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <span>Demo build · Body reflection level blended client-side from precomputed endpoints.</span>
+  </footer>
+
+  <script src="{{ js_url }}"></script>
+</body>
+</html>

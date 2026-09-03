@@ -1,52 +1,54 @@
 """
-AUTOFOX Reflection Removal — Gallery
-=====================================
+AUTOFOX Reflection-Level Interactive Tool
+=========================================
 
-Flask app that serves a read-only gallery of pre-generated image sets from
-GALLERY_DIR, each shown as two before/after sliders: original-vs-minibyte
-and original-vs-after.
+Flask app that serves an interactive viewer: for each car the original
+(reflective) image is shown on the left, and on the right a "processed" image
+whose **body reflection-removal level** is driven by a single slider.
+
+The slider is a straight cross-fade between two precomputed endpoints
+(<id>_base.jpg at level 0 and <id>_bodyclean.jpg at level 1), which reproduces
+the Colab per-class blend exactly for the body class while every other class
+setting is fixed. See scripts/build_reflection_endpoints.py for the offline
+generation, and reflection_data.py for the file grouping.
 """
 
 from __future__ import annotations
 
 from flask import Flask, render_template, send_from_directory, url_for
 
-from gallery_data import GALLERY_DIR, group_gallery_files
+from reflection_data import REFLECTION_DIR, group_reflection_files
 
 app = Flask(__name__)
 
 
-def list_gallery_items():
+def list_reflection_items():
     items = []
-    for base, files in sorted(group_gallery_files().items()):
+    for base, files in sorted(group_reflection_files().items()):
         items.append(
             {
                 "name": base,
-                "orignal_url": url_for("gallery_file", filename=files["orignal"]),
-                "minibyte_url": url_for("gallery_file", filename=files["minibyte"])
-                if "minibyte" in files
-                else None,
-                "after_url": url_for("gallery_file", filename=files["after"])
-                if "after" in files
-                else None,
+                "original_url": url_for("reflection_file", filename=files["original"]),
+                "base_url": url_for("reflection_file", filename=files["base"]),
+                "bodyclean_url": url_for("reflection_file", filename=files["bodyclean"]),
             }
         )
     return items
 
 
 @app.route("/")
-def gallery():
+def index():
     return render_template(
-        "gallery.html",
-        items=list_gallery_items(),
+        "reflection.html",
+        items=list_reflection_items(),
         css_url=url_for("static", filename="css/style.css"),
-        js_url=url_for("static", filename="js/gallery.js"),
+        js_url=url_for("static", filename="js/reflection.js"),
     )
 
 
-@app.route("/gallery-images/<path:filename>")
-def gallery_file(filename):
-    return send_from_directory(GALLERY_DIR, filename)
+@app.route("/reflection-images/<path:filename>")
+def reflection_file(filename):
+    return send_from_directory(REFLECTION_DIR, filename)
 
 
 if __name__ == "__main__":
