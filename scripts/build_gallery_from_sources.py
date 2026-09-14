@@ -51,25 +51,33 @@ def matched_ids(high_dir: str, comp_dir: str):
     return sorted(set(ids))
 
 
-def _resize_save(im: Image.Image, dst_path: Path, max_width: int, quality: int):
-    im = im.convert("RGB")
-    w, h = im.size
+def target_size(src_path: str, max_width: int):
+    """The web dimensions of the original: capped to max_width, keeping aspect."""
+    with Image.open(src_path) as im:
+        w, h = im.size
     if max_width and w > max_width:
-        im = im.resize((max_width, round(h * max_width / w)), Image.LANCZOS)
+        return (max_width, round(h * max_width / w))
+    return (w, h)
+
+
+def _save_exact(im: Image.Image, dst_path: Path, size, quality: int):
+    """Resize to an EXACT (w, h) so every variant lines up pixel-for-pixel."""
+    im = im.convert("RGB").resize(size, Image.LANCZOS)
     im.save(dst_path, "JPEG", quality=quality, optimize=True, progressive=True)
 
 
-def save_source(src_path: str, dst_path: Path, max_width: int, quality: int):
+def save_source(src_path: str, dst_path: Path, size, quality: int):
     with Image.open(src_path) as im:
-        _resize_save(im, dst_path, max_width, quality)
+        _save_exact(im, dst_path, size, quality)
 
 
-def save_after_from_composite(comp_path: str, dst_path: Path, max_width: int, quality: int):
-    """Crop the right half (processed side) of the side-by-side composite."""
+def save_after_from_composite(comp_path: str, dst_path: Path, size, quality: int):
+    """Crop the right half (processed side) of the side-by-side composite,
+    then force it to the original's exact dimensions."""
     with Image.open(comp_path) as im:
         w, h = im.size
         right = im.crop((w // 2, 0, w, h))
-        _resize_save(right, dst_path, max_width, quality)
+        _save_exact(right, dst_path, size, quality)
 
 
 def main():
@@ -92,13 +100,14 @@ def main():
     print(f"Building {len(ids)} cars -> {out_dir}  (max_width={args.max_width}, q={args.quality})")
 
     for i, base in enumerate(ids, 1):
-        save_source(os.path.join(args.high, f"{base}_high_original.png"),
-                    out_dir / f"{base}_original.jpg", args.max_width, args.quality)
+        orig_src = os.path.join(args.high, f"{base}_high_original.png")
+        size = target_size(orig_src, args.max_width)  # every variant matches this
+        save_source(orig_src, out_dir / f"{base}_original.jpg", size, args.quality)
         save_source(os.path.join(args.high, f"{base}_high_blended.png"),
-                    out_dir / f"{base}_blended.jpg", args.max_width, args.quality)
+                    out_dir / f"{base}_blended.jpg", size, args.quality)
         save_after_from_composite(find_composite(args.composite, base),
-                                  out_dir / f"{base}_after.jpg", args.max_width, args.quality)
-        print(f"[{i:>3}/{len(ids)}] {base}")
+                                  out_dir / f"{base}_after.jpg", size, args.quality)
+        print(f"[{i:>3}/{len(ids)}] {base}  {size[0]}x{size[1]}")
 
     print("Done.")
 
