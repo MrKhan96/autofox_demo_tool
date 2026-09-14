@@ -23,11 +23,10 @@
 
   <main class="gallery-main">
     <section class="hero">
-      <h1>Original vs. Minibyte vs. After</h1>
+      <h1>Original vs. Blended vs. After</h1>
       <p class="hero-sub">
         Each image below has two comparison sliders: Original against the
-        Minibyte-compressed version, and Original against the final Reflection
-        Removal output.
+        Blended result, and Original against the final Reflection Removal output.
       </p>
     </section>
 
@@ -37,11 +36,11 @@
       <div class="result-card gallery-card">
         <div class="card-name">{{ item.name }}</div>
 
-        {% if item.minibyte_url %}
+        {% if item.blended_url %}
         <div class="slider-block">
-          <div class="slider-label">Original vs Minibyte</div>
+          <div class="slider-label">Original vs Blended</div>
           <div class="compare-wrap">
-            <img class="compare-img img-after" data-src="{{ item.minibyte_url }}" alt="Minibyte" />
+            <img class="compare-img img-after" data-src="{{ item.blended_url }}" alt="Blended" />
             <div class="compare-before">
               <img class="compare-img img-before" data-src="{{ item.orignal_url }}" alt="Original" />
             </div>
@@ -50,7 +49,7 @@
               <div class="handle-circle">⟺</div>
             </div>
             <span class="tag tag-before">Original</span>
-            <span class="tag tag-after">Minibyte</span>
+            <span class="tag tag-after">Blended</span>
           </div>
         </div>
         {% endif %}
@@ -82,7 +81,7 @@
     </div>
     {% else %}
     <div class="error-box">No image sets found. Add files named
-      <code>&lt;name&gt;_original</code>, <code>&lt;name&gt;_minibyte_final</code> and
+      <code>&lt;name&gt;_original</code>, <code>&lt;name&gt;_blended</code> and
       <code>&lt;name&gt;_after</code> to the gallery folder.</div>
     {% endif %}
   </main>

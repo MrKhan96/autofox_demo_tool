@@ -29,8 +29,8 @@ def list_gallery_items():
             {
                 "name": base,
                 "orignal_url": url_for("gallery_file", filename=files["orignal"]),
-                "minibyte_url": url_for("gallery_file", filename=files["minibyte"])
-                if "minibyte" in files
+                "blended_url": url_for("gallery_file", filename=files["blended"])
+                if "blended" in files
                 else None,
                 "after_url": url_for("gallery_file", filename=files["after"])
                 if "after" in files

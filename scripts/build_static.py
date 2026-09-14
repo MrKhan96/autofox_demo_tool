@@ -34,8 +34,8 @@ def build_gallery_items():
             {
                 "name": base,
                 "orignal_url": f"gallery-images/{files['orignal']}",
-                "minibyte_url": f"gallery-images/{files['minibyte']}"
-                if "minibyte" in files
+                "blended_url": f"gallery-images/{files['blended']}"
+                if "blended" in files
                 else None,
                 "after_url": f"gallery-images/{files['after']}"
                 if "after" in files
